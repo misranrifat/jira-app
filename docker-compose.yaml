@@ -1,0 +1,48 @@
+
+services:
+  # Next.js Application
+  jira-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: jira-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    restart: unless-stopped
+    networks:
+      - jira-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development configuration
+  jira-app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: jira-app-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    restart: unless-stopped
+    networks:
+      - jira-network
+    profiles:
+      - dev
+
+networks:
+  jira-network:
+    driver: bridge
