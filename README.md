@@ -30,7 +30,7 @@ Open [http://localhost:3000](http://localhost:3000)
 ## Docker
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
